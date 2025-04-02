@@ -137,7 +137,8 @@ export class BusinessService {
           await this.googleCalendarService.deleteEvent(
             broker.google_calendar_token,
             broker.google_calendar_id,
-            currentBusiness.google_calendar_event_id
+            currentBusiness.google_calendar_event_id,
+            broker.google_calendar_refresh_token
           );
           data.google_calendar_event_id = null;
         } catch (error) {
@@ -159,7 +160,8 @@ export class BusinessService {
               broker.google_calendar_token,
               broker.google_calendar_id,
               currentBusiness.google_calendar_event_id,
-              eventData
+              eventData,
+              broker.google_calendar_refresh_token
             );
             data.google_calendar_event_id = updatedEvent.id;
           } else {
@@ -167,7 +169,8 @@ export class BusinessService {
             const newEvent = await this.googleCalendarService.createEvent(
               broker.google_calendar_token,
               broker.google_calendar_id,
-              eventData
+              eventData,
+              broker.google_calendar_refresh_token
             );
             data.google_calendar_event_id = newEvent.id;
           }
@@ -217,6 +220,7 @@ export class BusinessService {
           try {
             await this.googleCalendarService.deleteEvent(
               broker.google_calendar_token,
+              broker.google_calendar_refresh_token,
               broker.google_calendar_id,
               business.google_calendar_event_id
             );
