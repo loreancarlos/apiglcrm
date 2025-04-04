@@ -8,6 +8,7 @@ import { teamRoutes } from './team.routes.js';
 import { leadRoutes } from './lead.routes.js';
 import { businessRoutes } from './business.routes.js';
 import { callModeSessionRoutes } from './callModeSession.routes.js';
+import { googleCalendarRoutes } from './googleCalendar.routes.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -21,5 +22,6 @@ router.use('/teams', authMiddleware, teamRoutes);
 router.use('/leads', authMiddleware, leadRoutes);
 router.use('/business', authMiddleware, businessRoutes);
 router.use('/callModeSessions', authMiddleware, callModeSessionRoutes);
+router.use('/google-calendar', authMiddleware, googleCalendarRoutes);
 
 export { router };

@@ -17,11 +17,14 @@ export class AuthController {
       const token = jwt.sign(
         {
           id: user.id,
+          name: user.name,
           email: user.email,
           role: user.role,
           teamId: user.teamId,
           lastLogin: user.lastLogin,
-          google_calendar_token: user.google_calendar_token
+          google_calendar_token: user.google_calendar_token,
+          google_calendar_id: user.google_calendar_id,
+          google_calendar_refresh_token: user.google_calendar_refresh_token
         },
         process.env.JWT_SECRET,
         { expiresIn: '1d' }
@@ -37,7 +40,9 @@ export class AuthController {
           createdAt: user.createdAt,
           teamId: user.teamId,
           lastLogin: user.lastLogin,
-          google_calendar_token: user.google_calendar_token
+          google_calendar_token: user.google_calendar_token,
+          google_calendar_id: user.google_calendar_id,
+          google_calendar_refresh_token: user.google_calendar_refresh_token
         }
       });
     } catch (error) {
