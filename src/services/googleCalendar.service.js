@@ -1,9 +1,9 @@
 import db from '../database/connection.js';
+import config from 'dotenv/config';
 
 export class GoogleCalendarService {
    async refreshAccessToken(refreshToken) {
-      console.log("RENOVANDO TOKEN");
-      console.log(refreshToken);
+      console.log(process.env.GOOGLE_CLIENT_ID);
       try {
          const response = await fetch('https://oauth2.googleapis.com/token', {
             method: 'POST',
