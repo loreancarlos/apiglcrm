@@ -132,14 +132,14 @@ export class GoogleCalendarService {
          });
    }
 
-   async makeRequest(accessToken, refreshToken, requestFn) {
+   async makeRequest(accessToken, refreshToken, requestFn, brokerId) {
       try {
          return await requestFn(accessToken);
       } catch (error) {
          if (error.status === 401 && refreshToken) {
             const newAccessToken = await this.refreshAccessToken(refreshToken);
             await db('users')
-               .where({ id: userId })
+               .where({ id: brokerId })
                .update({ google_calendar_token: newAccessToken });
             return await requestFn(newAccessToken);
          }
@@ -147,7 +147,7 @@ export class GoogleCalendarService {
       }
    }
 
-   async createEvent(accessToken, calendarId, data, refreshToken) {
+   async createEvent(accessToken, calendarId, data, refreshToken, brokerId) {
       const createEventRequest = async (token) => {
          const response = await fetch(
             `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`,
@@ -181,10 +181,10 @@ export class GoogleCalendarService {
          return response.json();
       };
 
-      return this.makeRequest(accessToken, refreshToken, createEventRequest);
+      return this.makeRequest(accessToken, refreshToken, createEventRequest, brokerId);
    }
 
-   async updateEvent(accessToken, calendarId, eventId, data, refreshToken) {
+   async updateEvent(accessToken, calendarId, eventId, data, refreshToken, brokerId) {
       const updateEventRequest = async (token) => {
          const response = await fetch(
             `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
@@ -218,7 +218,7 @@ export class GoogleCalendarService {
          return response.json();
       };
 
-      return this.makeRequest(accessToken, refreshToken, updateEventRequest);
+      return this.makeRequest(accessToken, refreshToken, updateEventRequest, brokerId);
    }
 
    async deleteEvent(accessToken, calendarId, eventId, refreshToken) {

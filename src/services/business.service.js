@@ -161,7 +161,8 @@ export class BusinessService {
               broker.google_calendar_id,
               currentBusiness.google_calendar_event_id,
               eventData,
-              broker.google_calendar_refresh_token
+              broker.google_calendar_refresh_token,
+              broker.id
             );
             data.google_calendar_event_id = updatedEvent.id;
           } else {
@@ -170,7 +171,8 @@ export class BusinessService {
               broker.google_calendar_token,
               broker.google_calendar_id,
               eventData,
-              broker.google_calendar_refresh_token
+              broker.google_calendar_refresh_token,
+              broker.id
             );
             data.google_calendar_event_id = newEvent.id;
           }
