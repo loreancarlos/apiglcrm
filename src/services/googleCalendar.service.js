@@ -1,5 +1,4 @@
 import db from '../database/connection.js';
-import config from '../../node_modules/dotenv/config';
 
 export class GoogleCalendarService {
    async refreshAccessToken(refreshToken) {
