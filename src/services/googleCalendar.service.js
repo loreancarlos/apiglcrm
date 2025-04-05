@@ -2,6 +2,8 @@ import db from '../database/connection.js';
 
 export class GoogleCalendarService {
    async refreshAccessToken(refreshToken) {
+      console.log("RENOVANDO TOKEN");
+      console.log(refreshToken);
       try {
          const response = await fetch('https://oauth2.googleapis.com/token', {
             method: 'POST',
