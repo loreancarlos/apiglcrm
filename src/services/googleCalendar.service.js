@@ -138,6 +138,9 @@ export class GoogleCalendarService {
       } catch (error) {
          if (error.status === 401 && refreshToken) {
             const newAccessToken = await this.refreshAccessToken(refreshToken);
+            await db('users')
+               .where({ id: userId })
+               .update({ google_calendar_token: newAccessToken });
             return await requestFn(newAccessToken);
          }
          throw error;
