@@ -5,7 +5,6 @@ export function up(knex) {
       table.string('name');
       table.string('phone').notNullable().unique();
       table.specificType('developmentsInterest', 'text[]').notNullable();
-      table.uuid('brokerId').notNullable().references('id').inTable('users').onDelete('RESTRICT');
       table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now());
       table.timestamp('updatedAt').notNullable().defaultTo(knex.fn.now());
       table.timestamp('lastContact');

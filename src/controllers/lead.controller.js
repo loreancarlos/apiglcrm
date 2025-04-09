@@ -24,7 +24,6 @@ export class LeadController {
       } else {
         leads = await this.leadService.list(id);
       }
-
       return res.json(leads);
     } catch (error) {
       return res.status(500).json({ error: 'Erro interno do servidor' });
@@ -37,8 +36,7 @@ export class LeadController {
       const data = {
         name: req.body.name,
         phone: req.body.phone,
-        developmentsInterest: req.body.developmentsInterest,
-        brokerId: (role === 'broker') ? id : req.body.brokerId
+        developmentsInterest: req.body.developmentsInterest
       };
 
       // Verifica se o lead já existe pelo telefone
@@ -48,11 +46,11 @@ export class LeadController {
         // Se o lead existe, verifica se já tem negócio com o empreendimento atual
         const existingBusinesses = await this.businessService.findByLeadId(existingLead.id);
         for (const development of req.body.developmentsInterest) {
-          const hasBusinessWithDevelopment = existingBusinesses.some(
+          const hasBusinessWithDevelopment = existingBusinesses.filter(
             business => business.developmentId === development);
           if (hasBusinessWithDevelopment) {
             return res.status(409).json({
-              error: 'Lead já cadastrado e contendo negócio ativo com este empreendimento!'
+              error: `Lead já cadastrado para o ${hasBusinessWithDevelopment[0].developmentName} | ${hasBusinessWithDevelopment[0].brokerName}!`
             });
           }
 
@@ -62,10 +60,10 @@ export class LeadController {
             developmentId: development,
             source: req.body.source,
             status: "new",
+            brokerId: (role === 'broker') ? id : req.body.brokerId
           };
-          const res = await this.businessService.create(businessData);
+          const newBusiness = await this.businessService.create(businessData);
         }
-
         return res.status(200).json(existingLead);
       }
 
@@ -85,6 +83,74 @@ export class LeadController {
           developmentId,
           source: req.body.source,
           status: "new",
+          brokerId: (role === 'broker') ? id : req.body.brokerId
+        };
+        const business = await this.businessService.create(businessData);
+        wsManager.broadcastUpdate('NEW_BUSINESS', business);
+
+      }
+
+      return res.status(201).json(lead);
+    } catch (error) {
+      if (error.message === 'LEAD_DONT_HAS_DEVELOPMENTS') {
+        return res.status(400).json({ error: 'Nenhum empreendimento selecionado!' });
+      }
+      return res.status(500).json({ error: 'Erro interno do servidor' });
+    }
+  }
+
+  createImport = async (req, res) => {
+    try {
+      const { role, id } = req.user;
+      const data = {
+        name: req.body.name,
+        phone: req.body.phone,
+        developmentsInterest: req.body.developmentsInterest,
+      };
+
+      // Verifica se o lead já existe pelo telefone
+      const existingLead = await this.leadService.findByPhone(req.body.phone);
+
+      if (existingLead) {
+        // Se o lead existe, verifica se já tem negócio com o empreendimento atual
+        const existingBusinesses = await this.businessService.findByLeadId(existingLead.id);
+        for (const development of req.body.developmentsInterest) {
+          const hasBusinessWithDevelopment = existingBusinesses.filter(
+            business => business.developmentId === development);
+          if (hasBusinessWithDevelopment) {
+            return res.json(hasBusinessWithDevelopment[0]);
+          }
+
+          // Se não tem negócio com este empreendimento, cria um novo
+          const businessData = {
+            leadId: existingLead.id,
+            developmentId: development,
+            source: req.body.source,
+            status: "new",
+            brokerId: (role === 'broker') ? id : req.body.brokerId
+          };
+          const newBusiness = await this.businessService.create(businessData);
+        }
+        return res.status(200).json(existingLead);
+      }
+
+      // Se o lead não existe, cria um novo
+      if (!data.developmentsInterest || data.developmentsInterest.length === 0) {
+        throw new Error('LEAD_DONT_HAS_DEVELOPMENTS');
+      }
+      const lead = await this.leadService.create(data);
+
+      // Notificar todos os clientes conectados sobre o novo lead
+      wsManager.broadcastUpdate('NEW_LEAD', lead);
+
+      // Criar um negócio para cada empreendimento selecionado
+      for (const developmentId of lead.developmentsInterest) {
+        const businessData = {
+          leadId: lead.id,
+          developmentId,
+          source: req.body.source,
+          status: "new",
+          brokerId: (role === 'broker') ? id : req.body.brokerId
         };
         const business = await this.businessService.create(businessData);
         wsManager.broadcastUpdate('NEW_BUSINESS', business);

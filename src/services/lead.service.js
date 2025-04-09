@@ -4,17 +4,25 @@ import { wsManager } from '../websocket/websocketServer.js';
 export class LeadService {
   async list(brokerId = null, teamId = null) {
     let query = db('leads')
-      .select('*')
+      .select(
+        'leads.id',
+        'leads.name',
+        'leads.phone',
+        'leads.developmentsInterest',
+        'leads.lastContact',
+      )
       .orderBy('name');
 
     if (brokerId) {
-      query = query.where('leads.brokerId', brokerId);
+      query = query.join('business', 'business.leadId', '=', 'leads.id')
+        .where('business.brokerId', brokerId);
     }
 
     if (teamId) {
-      query = query.whereIn('leads.brokerId', function () {
-        this.select('id').from('users').where('teamId', teamId);
-      });
+      query = query.leftJoin('business', 'business.leadId', 'leads.id')
+        .whereIn('business.brokerId', function () {
+          this.select('id').from('users').where('teamId', teamId);
+        });
     }
 
     return query;
@@ -45,10 +53,11 @@ export class LeadService {
   async findById(id, brokerId = null) {
     let query = db('leads')
       .select('*')
+      .join('business', 'business.leadId', '=', 'leads.id')
       .where('leads.id', id);
 
     if (brokerId) {
-      query = query.where('leads.brokerId', brokerId);
+      query = query.where('business.brokerId', brokerId);
     }
 
     return query.first();
@@ -57,10 +66,11 @@ export class LeadService {
   async findByIdForTeamLeader(id, leaderId, teamId) {
     return db('leads')
       .select('*')
+      .join('business', 'business.leadId', '=', 'leads.id')
       .where('leads.id', id)
       .andWhere(function () {
-        this.where('leads.brokerId', leaderId)
-          .orWhereIn('leads.brokerId', function () {
+        this.where('business.brokerId', leaderId)
+          .orWhereIn('business.brokerId', function () {
             this.select('id').from('users').where('teamId', teamId);
           });
       })
@@ -71,7 +81,8 @@ export class LeadService {
     let query = db('leads').where({ id });
 
     if (brokerId) {
-      query = query.where('brokerId', brokerId);
+      query = query.join('business', 'business.leadId', '=', 'leads.id')
+        .where('business.brokerId', brokerId);
     }
 
     const [lead] = await query
@@ -84,9 +95,10 @@ export class LeadService {
   async updateForTeamLeader(id, data, leaderId, teamId) {
     const lead = await db('leads')
       .where('id', id)
+      .join('business', 'business.leadId', '=', 'leads.id')
       .andWhere(function () {
-        this.where('brokerId', leaderId)
-          .orWhereIn('brokerId', function () {
+        this.where('business.brokerId', leaderId)
+          .orWhereIn('business.brokerId', function () {
             this.select('id').from('users').where('teamId', teamId);
           });
       })
@@ -116,7 +128,8 @@ export class LeadService {
     let query = db('leads').where({ id });
 
     if (brokerId) {
-      query = query.where('brokerId', brokerId);
+      query = query.join('business', 'business.leadId', '=', 'leads.id')
+        .where('business.brokerId', brokerId);
     }
 
     await query.delete();
@@ -124,10 +137,11 @@ export class LeadService {
 
   async deleteForTeamLeader(id, leaderId, teamId) {
     await db('leads')
+      .join('business', 'business.leadId', '=', 'leads.id')
       .where('id', id)
       .andWhere(function () {
-        this.where('brokerId', leaderId)
-          .orWhereIn('brokerId', function () {
+        this.where('business.brokerId', leaderId)
+          .orWhereIn('business.brokerId', function () {
             this.select('id').from('users').where('teamId', teamId);
           });
       })

@@ -17,16 +17,16 @@ export class BusinessService {
         'developments.name as developmentName'
       )
       .leftJoin('leads', 'leads.id', 'business.leadId')
-      .leftJoin('users', 'users.id', 'leads.brokerId')
+      .leftJoin('users', 'users.id', 'business.brokerId')
       .leftJoin('developments', 'developments.id', 'business.developmentId')
       .orderBy('business.createdAt', 'desc');
 
     if (brokerId) {
-      query = query.where('leads.brokerId', brokerId);
+      query = query.where('business.brokerId', brokerId);
     }
 
     if (teamId) {
-      query = query.whereIn('leads.brokerId', function () {
+      query = query.whereIn('business.brokerId', function () {
         this.select('id').from('users').where('teamId', teamId);
       });
     }
@@ -58,7 +58,7 @@ export class BusinessService {
         'developments.name as developmentName'
       )
       .leftJoin('leads', 'leads.id', 'business.leadId')
-      .leftJoin('users', 'users.id', 'leads.brokerId')
+      .leftJoin('users', 'users.id', 'business.brokerId')
       .leftJoin('developments', 'developments.id', 'business.developmentId')
       .where('business.leadId', id);
   }
@@ -73,12 +73,12 @@ export class BusinessService {
         'developments.name as developmentName'
       )
       .leftJoin('leads', 'leads.id', 'business.leadId')
-      .leftJoin('users', 'users.id', 'leads.brokerId')
+      .leftJoin('users', 'users.id', 'business.brokerId')
       .leftJoin('developments', 'developments.id', 'business.developmentId')
       .where('business.id', id);
 
     if (brokerId) {
-      query = query.where('leads.brokerId', brokerId);
+      query = query.where('business.brokerId', brokerId);
     }
 
     return query.first();
@@ -94,12 +94,12 @@ export class BusinessService {
         'developments.name as developmentName'
       )
       .leftJoin('leads', 'leads.id', 'business.leadId')
-      .leftJoin('users', 'users.id', 'leads.brokerId')
+      .leftJoin('users', 'users.id', 'business.brokerId')
       .leftJoin('developments', 'developments.id', 'business.developmentId')
       .where('business.id', id)
       .andWhere(function () {
-        this.where('leads.brokerId', leaderId)
-          .orWhereIn('leads.brokerId', function () {
+        this.where('business.brokerId', leaderId)
+          .orWhereIn('business.brokerId', function () {
             this.select('id').from('users').where('teamId', teamId);
           });
       })
@@ -122,7 +122,7 @@ export class BusinessService {
     }
 
     const broker = await db('users')
-      .where({ id: lead.brokerId })
+      .where({ id: currentBusiness.brokerId })
       .first();
 
     // Handle Google Calendar event
@@ -215,7 +215,7 @@ export class BusinessService {
 
       if (lead) {
         const broker = await db('users')
-          .where({ id: lead.brokerId })
+          .where({ id: business.brokerId })
           .first();
 
         if (broker?.google_calendar_token && broker?.google_calendar_id) {
@@ -237,7 +237,7 @@ export class BusinessService {
 
     if (brokerId) {
       query = query.whereIn('leadId', function () {
-        this.select('id').from('leads').where('brokerId', brokerId);
+        this.select('id').from('business').where('brokerId', brokerId);
       });
     }
 
