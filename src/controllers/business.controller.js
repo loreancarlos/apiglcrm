@@ -28,7 +28,9 @@ export class BusinessController {
 
    create = async (req, res) => {
       try {
+         const { id } = req.user;
          const data = req.body;
+         data.brokerId = id;
          const business = await this.businessService.create(data);
          // Notificar todos os clientes conectados sobre o novo business
          wsManager.broadcastUpdate('NEW_BUSINESS', business);
