@@ -77,13 +77,8 @@ export class LeadService {
       .first();
   }
 
-  async update(id, data, brokerId = null) {
+  async update(id, data) {
     let query = db('leads').where({ id });
-
-    if (brokerId) {
-      query = query.join('business', 'business.leadId', '=', 'leads.id')
-        .where('business.brokerId', brokerId);
-    }
 
     const [lead] = await query
       .update(data)

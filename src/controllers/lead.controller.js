@@ -191,13 +191,7 @@ export class LeadController {
 
   update = async (req, res) => {
     try {
-      const { role, id } = req.user;
-      let lead;
-      if (role === 'admin' || role === 'teamLeader') {
-        lead = await this.leadService.update(req.params.id, req.body);
-      } else {
-        lead = await this.leadService.update(req.params.id, req.body, id);
-      }
+      const lead = await this.leadService.update(req.params.id, req.body);
 
       if (!lead) {
         return res.status(404).json({ error: 'Lead não encontrado' });
