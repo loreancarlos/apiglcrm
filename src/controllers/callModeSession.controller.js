@@ -7,11 +7,12 @@ export class CallModeSessionController {
 
    create = async (req, res) => {
       try {
-         const { startTime, endTime, businessViewed } = req.body;
+         const { startTime, endTime, businessViewed, developmentId } = req.body;
          const userId = req.user.id;
 
          const session = await this.callModeSessionService.create({
             userId,
+            developmentId,
             startTime,
             endTime,
             businessViewed,

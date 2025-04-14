@@ -2,6 +2,7 @@ export function up(knex) {
    return knex.schema.createTable('callModeSessions', (table) => {
       table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
       table.uuid('userId').notNullable().references('id').inTable('users').onDelete('CASCADE');
+      table.uuid('developmentId').notNullable().references('id').inTable('developments').onDelete('CASCADE');
       table.timestamp('startTime').notNullable();
       table.timestamp('endTime').notNullable();
       table.specificType('businessViewed', 'text[]').notNullable();
