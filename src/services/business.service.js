@@ -206,7 +206,6 @@ export class BusinessService {
     if (!business) {
       throw new Error('Business not found');
     }
-
     // Delete Google Calendar event if it exists
     if (business.google_calendar_event_id) {
       const lead = await db('leads')
@@ -236,11 +235,9 @@ export class BusinessService {
     let query = db('business').where({ id });
 
     if (brokerId) {
-      query = query.whereIn('leadId', function () {
-        this.select('id').from('business').where('brokerId', brokerId);
-      });
+      query = query.where({ brokerId });
     }
-
+    
     await query.delete();
   }
 }
