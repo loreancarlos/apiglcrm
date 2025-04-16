@@ -133,6 +133,7 @@ export class BusinessService {
 
       // If status is changing from scheduled to something else, delete the event
       if (currentBusiness.status === 'scheduled' && data.status !== 'scheduled' && currentBusiness.google_calendar_event_id) {
+        console.log("DELETANDO...");
         try {
           await this.googleCalendarService.deleteEvent(
             broker.google_calendar_token,
@@ -155,6 +156,7 @@ export class BusinessService {
         };
         try {
           if (currentBusiness.google_calendar_event_id) {
+            console.log("ATUALIZANDO EVENTO JÁ EXISTENTE...");
             // Update existing event
             const updatedEvent = await this.googleCalendarService.updateEvent(
               broker.google_calendar_token,
@@ -166,6 +168,7 @@ export class BusinessService {
             );
             data.google_calendar_event_id = updatedEvent.id;
           } else {
+            console.log("CRIANDO UM NOVO EVENTO...");
             // Create new event
             const newEvent = await this.googleCalendarService.createEvent(
               broker.google_calendar_token,
@@ -208,26 +211,21 @@ export class BusinessService {
     }
     // Delete Google Calendar event if it exists
     if (business.google_calendar_event_id) {
-      const lead = await db('leads')
-        .where({ id: business.leadId })
+
+      const broker = await db('users')
+        .where({ id: business.brokerId })
         .first();
 
-      if (lead) {
-        const broker = await db('users')
-          .where({ id: business.brokerId })
-          .first();
-
-        if (broker?.google_calendar_token && broker?.google_calendar_id) {
-          try {
-            await this.googleCalendarService.deleteEvent(
-              broker.google_calendar_token,
-              broker.google_calendar_refresh_token,
-              broker.google_calendar_id,
-              business.google_calendar_event_id
-            );
-          } catch (error) {
-            console.error('Error deleting calendar event:', error);
-          }
+      if (broker?.google_calendar_token && broker?.google_calendar_id) {
+        try {
+          await this.googleCalendarService.deleteEvent(
+            broker.google_calendar_token,
+            broker.google_calendar_refresh_token,
+            broker.google_calendar_id,
+            business.google_calendar_event_id
+          );
+        } catch (error) {
+          console.error('Error deleting calendar event:', error);
         }
       }
     }
@@ -237,7 +235,7 @@ export class BusinessService {
     if (brokerId) {
       query = query.where({ brokerId });
     }
-    
+
     await query.delete();
   }
 }
