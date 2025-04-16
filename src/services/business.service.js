@@ -133,7 +133,6 @@ export class BusinessService {
 
       // If status is changing from scheduled to something else, delete the event
       if (currentBusiness.status === 'scheduled' && data.status !== 'scheduled' && currentBusiness.google_calendar_event_id) {
-        console.log("DELETANDO...");
         try {
           await this.googleCalendarService.deleteEvent(
             broker.google_calendar_token,
@@ -156,7 +155,6 @@ export class BusinessService {
         };
         try {
           if (currentBusiness.google_calendar_event_id) {
-            console.log("ATUALIZANDO EVENTO JÁ EXISTENTE...");
             // Update existing event
             const updatedEvent = await this.googleCalendarService.updateEvent(
               broker.google_calendar_token,
@@ -168,7 +166,6 @@ export class BusinessService {
             );
             data.google_calendar_event_id = updatedEvent.id;
           } else {
-            console.log("CRIANDO UM NOVO EVENTO...");
             // Create new event
             const newEvent = await this.googleCalendarService.createEvent(
               broker.google_calendar_token,
