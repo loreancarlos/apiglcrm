@@ -122,9 +122,8 @@ export class BusinessService {
     }
 
     const broker = await db('users')
-      .where({ id: currentBusiness.brokerId })
+      .where({ id: data.brokerId })
       .first();
-
     // Handle Google Calendar event
     if (broker?.google_calendar_token && broker?.google_calendar_id) {
       const development = await db('developments')
@@ -185,6 +184,7 @@ export class BusinessService {
     const [business] = await db('business')
       .where({ id })
       .update({
+        brokerId: data.brokerId,
         source: data.source,
         status: data.status,
         scheduledAt: data.scheduledAt,
