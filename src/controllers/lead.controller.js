@@ -48,7 +48,7 @@ export class LeadController {
         for (const development of req.body.developmentsInterest) {
           const hasBusinessWithDevelopment = existingBusinesses.filter(
             business => business.developmentId === development);
-          if (hasBusinessWithDevelopment) {
+          if (hasBusinessWithDevelopment.length) {
             return res.status(409).json({
               error: `Lead já cadastrado para o ${hasBusinessWithDevelopment[0].developmentName} | ${hasBusinessWithDevelopment[0].brokerName}!`
             });
@@ -117,7 +117,7 @@ export class LeadController {
         for (const development of req.body.developmentsInterest) {
           const hasBusinessWithDevelopment = existingBusinesses.filter(
             business => business.developmentId === development);
-          if (hasBusinessWithDevelopment) {
+            if (hasBusinessWithDevelopment.length) {
             return res.json(hasBusinessWithDevelopment[0]);
           }
 
