@@ -217,9 +217,9 @@ export class BusinessService {
         try {
           await this.googleCalendarService.deleteEvent(
             broker.google_calendar_token,
-            broker.google_calendar_refresh_token,
             broker.google_calendar_id,
-            business.google_calendar_event_id
+            business.google_calendar_event_id,
+            broker.google_calendar_refresh_token
           );
         } catch (error) {
           console.error('Error deleting calendar event:', error);

@@ -117,7 +117,7 @@ export class LeadController {
         for (const development of req.body.developmentsInterest) {
           const hasBusinessWithDevelopment = existingBusinesses.filter(
             business => business.developmentId === development);
-            if (hasBusinessWithDevelopment.length) {
+          if (hasBusinessWithDevelopment.length) {
             return res.json(hasBusinessWithDevelopment[0]);
           }
 

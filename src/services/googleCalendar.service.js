@@ -232,7 +232,8 @@ export class GoogleCalendarService {
                },
             }
          );
-
+         console.log("DEVERIA TER DELETADO COM ESSE TOKEN: " + token)
+         console.log(response);
          if (!response.ok && response.status !== 404) {
             const error = await response.json();
             error.status = response.status;
