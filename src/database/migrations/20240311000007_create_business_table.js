@@ -6,7 +6,7 @@ export function up(knex) {
          table.uuid('developmentId').notNullable().references('id').inTable('developments').onDelete('CASCADE');
          table.uuid('brokerId').notNullable().references('id').inTable('users').onDelete('CASCADE');
          table.enum('source', ['indication', 'organic', 'website', 'paidTraffic', 'doorToDoor', 'tent', 'importedList']).notNullable();
-         table.enum('status', ['new', 'recall', 'whatsapp', 'scheduled', 'lost']).notNullable().defaultTo('new');
+         table.enum('status', ['new', 'recall', 'whatsapp', 'scheduled', 'appear', 'unfinishedCad', 'finishedCad', 'sold', 'lost', 'lostWithCad']).notNullable().defaultTo('new');
          table.timestamp('scheduledAt');
          table.timestamp('recallAt');
          table.timestamp('lastCallAt');
